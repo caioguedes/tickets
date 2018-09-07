@@ -1,7 +1,11 @@
 (ns tickets.core-test
   (:require [clojure.test :refer :all]
-            [tickets.core :refer :all]))
+            [ring.mock.request :as mock]
+            [tickets.core :refer [app]]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest test-app
+  (testing "main route"
+    (is (= {:status 200
+            :headers {}
+            :body "Hello World"}
+           (app (mock/request :get "/"))))))

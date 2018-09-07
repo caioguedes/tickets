@@ -1,7 +1,6 @@
 (ns tickets.core
-  (:gen-class))
+  (:require [compojure.api.sweet :refer :all]
+            [ring.util.http-response :refer :all]))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(def app
+   (GET "/" [] (ok "Hello World")))
