@@ -3,4 +3,6 @@
             [ring.util.http-response :refer :all]))
 
 (def app
-   (GET "/" [] (ok "Hello World")))
+  (api
+   (context "/api/v1" []
+            (GET "/" [] (ok {:message "Hello World"})))))
