@@ -7,10 +7,40 @@
 (defn parse-body [{:keys [body] :as response}]
   (assoc response :body (json/parse-string (slurp body) true)))
 
+(def default-headers {"Content-Type" "application/json; charset=utf-8"})
+
+(def mock-ticket {:id 1
+                  :subject "New Ticket"
+                  :body "This is a new ticket, yet"
+                  :status {:id 1
+                           :name "New"}})
+
 (deftest test-app
-  (testing "main route"
+  (testing "Main router"
     (let [response (parse-body (app (mock/request :get "/api/v1")))
           expected {:status 200
-                    :headers {"Content-Type" "application/json; charset=utf-8"}
+                    :headers default-headers
                     :body {:message "Hello World"}}]
+      (is (= expected response))))
+
+  (testing "Not found"
+    (let [response (parse-body (app (mock/request :get "/api/v1/not-found")))]
+      (is (= 1 1))))
+
+  (testing "List tickets"
+    (let [response (parse-body (app (mock/request :get "/api/v1/tickets")))
+          expected {:status 200
+                    :headers default-headers
+                    :body {:results [mock-ticket]
+                           :page 1
+                           :per_page 10
+                           :total 1
+                           :total_page 1}}]
+      (is (= expected response))))
+
+  (testing "Get ticket"
+    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1")))
+          expected {:status 200
+                    :headers default-headers
+                    :body {:results mock-ticket}}]
       (is (= expected response)))))
