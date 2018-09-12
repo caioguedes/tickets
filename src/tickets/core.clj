@@ -26,7 +26,7 @@
 
     (POST "/" []
       :summary "Create a new ticket"
-      (ok {:results mock-ticket}))))
+      (created "/api/v1/tickets/1" {:results mock-ticket}))))
 
 (def app
   (api

@@ -15,6 +15,8 @@
                   :status {:id 1
                            :name "New"}})
 
+(parse-body (app (mock/request :get "/api/v1/not-found")))
+
 (deftest test-app
   (testing "Main router"
     (let [response (parse-body (app (mock/request :get "/api/v1")))
@@ -41,9 +43,19 @@
                            :total_page 1}}]
       (is (= expected response))))
 
-  (testing "Get ticket"
+  (testing "Get a ticket"
     (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1")))
           expected {:status 200
                     :headers default-headers
+                    :body {:results mock-ticket}}]
+      (is (= expected response))))
+
+  (testing "Create a ticket"
+    (let [response (parse-body (app (-> (mock/request :post "/api/v1/tickets")
+                                        (mock/json-body (select-keys
+                                                         mock-ticket
+                                                         [:subject :body])))))
+          expected {:status 201
+                    :headers (conj default-headers {"Location" "/api/v1/tickets/1"})
                     :body {:results mock-ticket}}]
       (is (= expected response)))))
