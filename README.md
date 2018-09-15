@@ -18,6 +18,29 @@ FIXME: listing of options this app accepts.
 
 ## Examples
 
+## Setup Development Environment
+
+Requirements:
+* Java 1.8+
+* Leiningen 2+
+* Postgres 10
+
+### Running Api Server
+
+By default the api will start at port 3000, just run:
+
+```
+lein ring server
+```
+
+### Testing
+
+To make sure that nothing break, just run:
+
+```
+lein test
+```
+
 ...
 
 ### Bugs
