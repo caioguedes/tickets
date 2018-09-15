@@ -2,7 +2,24 @@
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
             [cheshire.core :as json]
+            [tickets.database :refer [create-tables drop-tables]]
+            [tickets.db.ticket :as ticket]
             [tickets.core :refer [app]]))
+
+(def db-spec {:dbtype "postgresql"
+              :dbname "tickets"
+              :host "localhost"
+              :user "postgres"
+              :password ""})
+
+(defn database-fixtures [test]
+  (do
+    (drop-tables db-spec)
+    (create-tables db-spec))
+  (test)
+  (drop-tables db-spec))
+
+(use-fixtures :each database-fixtures)
 
 (defn parse-body [{:keys [body] :as response}]
   (assoc response :body (json/parse-string (slurp body) true)))
@@ -31,7 +48,10 @@
       (is (= expected response))))
 
   (testing "List tickets"
-    (let [response (parse-body (app (mock/request :get "/api/v1/tickets")))
+    (let [ticket-fixture (ticket/create-ticket db-spec {:subject "New Ticket"
+                                                        :body "This is a new ticket, yet"
+                                                        :status_id 1})
+          response (parse-body (app (mock/request :get "/api/v1/tickets")))
           expected {:status 200
                     :headers default-headers
                     :body {:results [mock-ticket]

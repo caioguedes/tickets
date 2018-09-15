@@ -1,7 +1,8 @@
 (ns tickets.core
   (:require [compojure.api.sweet :refer :all]
             [compojure.route :as route]
-            [ring.util.http-response :refer :all]))
+            [ring.util.http-response :refer :all]
+            [tickets.db.ticket :as ticket]))
 
 (def mock-ticket {:id 1
                    :subject "New Ticket"
@@ -9,12 +10,18 @@
                    :status {:id 1
                             :name "New"}})
 
+(def db-spec {:dbtype "postgresql"
+              :dbname "tickets"
+              :host "localhost"
+              :user "postgres"
+              :password ""})
+
 (def tickets-routes
   (context "/tickets" []
 
     (GET "/" []
       :summary "List tickets"
-      (ok {:results [mock-ticket]
+      (ok {:results [(ticket/get-ticket db-spec 1)]
            :page 1
            :per_page 10
            :total 1
