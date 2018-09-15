@@ -15,8 +15,6 @@
                   :status {:id 1
                            :name "New"}})
 
-(parse-body (app (mock/request :get "/api/v1/not-found")))
-
 (deftest test-app
   (testing "Main router"
     (let [response (parse-body (app (mock/request :get "/api/v1")))
