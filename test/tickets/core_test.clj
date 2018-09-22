@@ -70,4 +70,18 @@
           expected {:status 201
                     :headers (conj default-headers {"Location" "/api/v1/tickets/1"})
                     :body {:results mock-ticket}}]
+      (is (= expected response))))
+
+  (testing "Update a ticket"
+    (let [response (parse-body (app (-> (mock/request :put "/api/v1/tickets/1")
+                                        (mock/json-body {:subject "Subject updated!"
+                                                         :body "A brand new body here..."
+                                                         :status_id 2}))))
+          expected {:status 200
+                    :headers default-headers
+                    :body {:results {:id 1
+                                     :subject "Subject updated!"
+                                     :body "A brand new body here..."
+                                     :status {:id 2
+                                              :name "Open"}}}}]
       (is (= expected response)))))

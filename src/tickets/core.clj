@@ -5,10 +5,10 @@
             [tickets.db.ticket :as ticket]))
 
 (def mock-ticket {:id 1
-                   :subject "New Ticket"
-                   :body "This is a new ticket, yet"
-                   :status {:id 1
-                            :name "New"}})
+                  :subject "New Ticket"
+                  :body "This is a new ticket, yet"
+                  :status {:id 1
+                           :name "New"}})
 
 (def db-spec {:dbtype "postgresql"
               :dbname "tickets"
@@ -20,20 +20,29 @@
   (context "/tickets" []
 
     (GET "/" []
-      :summary "List tickets"
-      (ok {:results [(ticket/get-ticket db-spec 1)]
-           :page 1
-           :per_page 10
-           :total 1
-           :total_page 1}))
+         :summary "List tickets"
+         (ok {:results [(ticket/get-ticket db-spec 1)]
+              :page 1
+              :per_page 10
+              :total 1
+              :total_page 1}))
 
     (GET "/:id" [id]
-      :summary "Get a single ticket"
-      (ok {:results mock-ticket}))
+         :summary "Get a single ticket"
+         (ok {:results mock-ticket}))
 
     (POST "/" []
-      :summary "Create a new ticket"
-      (created "/api/v1/tickets/1" {:results mock-ticket}))))
+          :summary "Create a new ticket"
+          (created "/api/v1/tickets/1" {:results mock-ticket}))
+
+    (PUT "/:id" [id :as request]
+         :summary "Update a ticket"
+         (ok {:results (assoc mock-ticket
+                              :id (Integer/parseInt id)
+                              :status {:name "Open"
+                                       :id 2}
+                              :subject (get-in request [:params :subject])
+                              :body (get-in request [:params :body]))}))))
 
 (def app
   (api
