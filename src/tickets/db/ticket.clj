@@ -1,5 +1,6 @@
 (ns tickets.db.ticket
-  (:require [clojure.java.jdbc :as j]))
+  (:require [clojure.java.jdbc :as j]
+            [tickets.db.status :as status]))
 
 (defn create-ticket [db-spec ticket]
   (j/insert! db-spec :ticket ticket))
@@ -10,6 +11,5 @@
 (defn get-ticket [db-spec id]
   (when-let [ticket (j/query db-spec ["select * from ticket where id = ?" id] {:result-set-fn first})]
     (-> ticket
-        (assoc :status {:id 1 :name "New"}) ;; Temporary
+        (assoc :status (status/get-status db-spec (:status_id ticket)))
         (dissoc :status_id))))
-

@@ -4,13 +4,7 @@
             [cheshire.core :as json]
             [tickets.database :refer [create-tables drop-tables]]
             [tickets.db.ticket :as ticket]
-            [tickets.core :refer [app]]))
-
-(def db-spec {:dbtype "postgresql"
-              :dbname "tickets"
-              :host "localhost"
-              :user "postgres"
-              :password ""})
+            [tickets.core :refer [app db-spec]]))
 
 (defn database-fixtures [test]
   (do
