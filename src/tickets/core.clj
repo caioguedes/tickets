@@ -19,13 +19,11 @@
 (def tickets-routes
   (context "/tickets" []
 
-    (GET "/" []
+    (GET "/" [request]
          :summary "List tickets"
-         (ok {:results [(ticket/get-ticket db-spec 1)]
-              :page 1
-              :per_page 10
-              :total 1
-              :total_page 1}))
+         (let [page (get-in request [:params :page] 1)
+               per_page (get-in request [:params :per_page] 10)]
+           (ok (ticket/find-tickets-paginate db-spec page per_page))))
 
     (GET "/:id" [id]
          :summary "Get a single ticket"

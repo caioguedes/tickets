@@ -52,7 +52,7 @@
                            :page 1
                            :per_page 10
                            :total 1
-                           :total_page 1}}]
+                           :total_pages 1}}]
       (is (= expected response))))
 
   (testing "Get a ticket"
