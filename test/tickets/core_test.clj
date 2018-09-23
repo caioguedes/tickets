@@ -87,4 +87,14 @@
                                      :body "A brand new body here..."
                                      :status {:id 2
                                               :name "Open"}}}}]
+      (is (= expected response))))
+
+  (testing "Update a ticket does not exist"
+    (let [response (parse-body (app (-> (mock/request :put "/api/v1/tickets/10")
+                                        (mock/json-body {:subject "Ghost ticket"
+                                                         :body "This ticket does not exists!"
+                                                         :status_id 1}))))
+          expected {:status 404
+                    :headers default-headers
+                    :body {:message "Not Found"}}]
       (is (= expected response)))))

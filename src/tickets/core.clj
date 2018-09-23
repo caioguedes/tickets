@@ -36,7 +36,7 @@
 
     (PUT "/:id" [id :as request]
          :summary "Update a ticket"
-         (if-not (ticket/get-ticket id)
+         (if-not (ticket/get-ticket db-spec id)
            (not-found {:message "Not Found"})
            (let [changes (select-keys (:params request) [:subject :body :status_id])
                  updated (ticket/update-ticket db-spec (assoc changes :id id))]
