@@ -11,7 +11,7 @@
   (j/insert! db-spec :ticket ticket))
 
 (defn update-ticket [db-spec ticket]
-  (j/update! db-spec :ticket ticket ["id = ?" (:id ticket)]))
+  (j/update! db-spec :ticket (dissoc ticket :id) ["id = ?" (:id ticket)]))
 
 (defn get-ticket [db-spec id]
   (j/query db-spec

@@ -14,7 +14,8 @@
               :dbname "tickets"
               :host "localhost"
               :user "postgres"
-              :password ""})
+              :password ""
+              :stringtype "unspecified"})
 
 (def tickets-routes
   (context "/tickets" []
@@ -35,12 +36,11 @@
 
     (PUT "/:id" [id :as request]
          :summary "Update a ticket"
-         (ok {:results (assoc mock-ticket
-                              :id (Integer/parseInt id)
-                              :status {:name "Open"
-                                       :id 2}
-                              :subject (get-in request [:params :subject])
-                              :body (get-in request [:params :body]))}))))
+         (if-not (ticket/get-ticket id)
+           (not-found {:message "Not Found"})
+           (let [changes (select-keys (:params request) [:subject :body :status_id])
+                 updated (ticket/update-ticket db-spec (assoc changes :id id))]
+             (ok {:results (ticket/get-ticket db-spec id)}))))))
 
 (def app
   (api

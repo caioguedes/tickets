@@ -73,7 +73,10 @@
       (is (= expected response))))
 
   (testing "Update a ticket"
-    (let [response (parse-body (app (-> (mock/request :put "/api/v1/tickets/1")
+    (let [ticket-fixture (ticket/create-ticket db-spec {:subject "New Ticket"
+                                                        :body "This is a new ticket, yet"
+                                                        :status_id 1})
+          response (parse-body (app (-> (mock/request :put "/api/v1/tickets/1")
                                         (mock/json-body {:subject "Subject updated!"
                                                          :body "A brand new body here..."
                                                          :status_id 2}))))
