@@ -52,17 +52,21 @@
                      :body "Yeah! When I push the button, nothing happens..."}])
 
 (def tickets-comments-routes
-  (context "/tickets" []
+  (context "/tickets/:ticket-id" [ticket-id]
 
-    (GET "/:id/comments" [request]
-        :summary "List comments on a ticket"
-        (let [page (get-in request [:params :page] 1)
-              per_page (get-in request [:params :per_page] 10)]
-          (ok {:results [mock-comments]
-               :page 1
-               :per_page 10
-               :total 2
-               :total_pages 1})))))
+    (GET "/comments" [request]
+         :summary "List comments on a ticket"
+         (let [page (get-in request [:params :page] 1)
+               per_page (get-in request [:params :per_page] 10)]
+           (ok {:results [mock-comments]
+                :page 1
+                :per_page 10
+                :total 2
+                :total_pages 1})))
+
+    (GET "/comments/:id" [id :as request]
+         :summary "Get a comment"
+         (ok {:results (first mock-comments)}))))
 
 (def app
   (api

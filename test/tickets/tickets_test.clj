@@ -103,3 +103,11 @@
                            :total 2
                            :total_pages 1}}]
       (is (= expected response)))))
+
+(deftest test-tickets-comment-get-route
+  (testing "Get a comment"
+    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments/1")))
+          expected {:status 200
+                    :headers default-headers
+                    :body {:results (first mock-comments)}}]
+      (is (= expected response)))))
