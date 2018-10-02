@@ -66,7 +66,9 @@
 
     (GET "/comments/:id" [id :as request]
          :summary "Get a comment"
-         (ok {:results (first mock-comments)}))))
+         (if (= id "10")
+           (not-found {:message "Not Found"})
+           (ok {:results (first mock-comments)})))))
 
 (def app
   (api

@@ -110,4 +110,11 @@
           expected {:status 200
                     :headers default-headers
                     :body {:results (first mock-comments)}}]
+      (is (= expected response))))
+
+  (testing "Get a comment does not exist"
+    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments/10")))
+          expected {:status 404
+                    :headers default-headers
+                    :body {:message "Not Found"}}]
       (is (= expected response)))))
