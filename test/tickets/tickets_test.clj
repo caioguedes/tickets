@@ -84,3 +84,22 @@
                     :headers default-headers
                     :body {:message "Not Found"}}]
       (is (= expected response)))))
+
+(def mock-comments [{:id 1
+                     :ticket_id 1
+                     :body "Could you discribe the error?"}
+                    {:id 2
+                     :ticket_id 1
+                     :body "Yeah! When I push the button, nothing happens..."}])
+
+(deftest test-tickets-comment-list-route
+  (testing "List comments on a ticket"
+    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments")))
+          expected {:status 200
+                    :headers default-headers
+                    :body {:results [mock-comments]
+                           :page 1
+                           :per_page 10
+                           :total 2
+                           :total_pages 1}}]
+      (is (= expected response)))))

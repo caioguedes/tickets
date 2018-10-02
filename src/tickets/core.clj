@@ -44,6 +44,26 @@
                  updated (ticket/update-ticket db-spec (assoc changes :id id))]
              (ok {:results (ticket/get-ticket db-spec id)}))))))
 
+(def mock-comments [{:id 1
+                     :ticket_id 1
+                     :body "Could you discribe the error?"}
+                    {:id 2
+                     :ticket_id 1
+                     :body "Yeah! When I push the button, nothing happens..."}])
+
+(def tickets-comments-routes
+  (context "/tickets" []
+
+    (GET "/:id/comments" [request]
+        :summary "List comments on a ticket"
+        (let [page (get-in request [:params :page] 1)
+              per_page (get-in request [:params :per_page] 10)]
+          (ok {:results [mock-comments]
+               :page 1
+               :per_page 10
+               :total 2
+               :total_pages 1})))))
+
 (def app
   (api
    {:swagger
@@ -58,6 +78,9 @@
      :tags ["api"]
      (GET "/" [] (ok {:message "Hello World"}))
      ;; Tickets
-     tickets-routes)
+     tickets-routes
+     ;; Tickets Comments
+     tickets-comments-routes)
+
    (undocumented
     (route/not-found (not-found {:message "Not Found"})))))
