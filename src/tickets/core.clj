@@ -28,7 +28,9 @@
 
     (GET "/:id" [id]
          :summary "Get a single ticket"
-         (ok {:results mock-ticket}))
+         (if-let [ticket (ticket/get-ticket db-spec id)]
+           (ok {:results ticket})
+           (not-found {:message "Not Found"})))
 
     (POST "/" []
           :summary "Create a new ticket"
