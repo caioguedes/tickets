@@ -2,7 +2,8 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.route :as route]
             [ring.util.http-response :refer :all]
-            [tickets.db.ticket :as ticket]))
+            [tickets.db.ticket :as ticket]
+            [tickets.db.comment :as ticket-comment]))
 
 (def mock-ticket {:id 1
                   :subject "New Ticket"
@@ -58,17 +59,17 @@
          :summary "List comments on a ticket"
          (let [page (get-in request [:params :page] 1)
                per_page (get-in request [:params :per_page] 10)]
-           (ok {:results [mock-comments]
-                :page 1
-                :per_page 10
-                :total 2
-                :total_pages 1})))
+           (ok (ticket-comment/get-comments-on-ticket-paginate
+                db-spec
+                ticket-id
+                page
+                per_page))))
 
     (GET "/comments/:id" [id :as request]
          :summary "Get a comment"
          (if (= id "10")
            (not-found {:message "Not Found"})
-           (ok {:results (first mock-comments)})))))
+           (ok {:results (ticket-comment/get-comment db-spec id)})))))
 
 (def app
   (api

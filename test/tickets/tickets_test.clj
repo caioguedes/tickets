@@ -2,6 +2,7 @@
   (:require  [clojure.test :refer :all]
              [ring.mock.request :as mock]
              [tickets.db.ticket :as ticket]
+             [tickets.db.comment :as ticket-comment]
              [tickets.core :refer [app db-spec]]
              [tickets.core-test :refer [database-fixtures parse-body default-headers]]))
 
@@ -94,10 +95,16 @@
 
 (deftest test-tickets-comment-list-route
   (testing "List comments on a ticket"
-    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments")))
+    (let [ticket-fixture (ticket/create-ticket db-spec {:subject "Just a new ticket"
+                                                        :body "I am a baby ticket :D"
+                                                        :status_id 1})
+          message-create (partial ticket-comment/create-comment-on-ticket db-spec 1)
+          message-fixture [(message-create "Could you discribe the error?")
+                           (message-create "Yeah! When I push the button, nothing happens...")]
+          response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments")))
           expected {:status 200
                     :headers default-headers
-                    :body {:results [mock-comments]
+                    :body {:results mock-comments
                            :page 1
                            :per_page 10
                            :total 2
@@ -106,7 +113,12 @@
 
 (deftest test-tickets-comment-get-route
   (testing "Get a comment"
-    (let [response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments/1")))
+    (let [ticket-fixture (ticket/create-ticket db-spec {:subject "Just a new ticket"
+                                                        :body "I am a baby ticket :D"
+                                                        :status_id 1})
+          message-fixture [(ticket-comment/create-comment-on-ticket db-spec 1 "Could you discribe the error?")
+                           (ticket-comment/create-comment-on-ticket db-spec 1 "Yeah! When I push the button, nothing happens...")]
+          response (parse-body (app (mock/request :get "/api/v1/tickets/1/comments/1")))
           expected {:status 200
                     :headers default-headers
                     :body {:results (first mock-comments)}}]
