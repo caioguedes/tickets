@@ -8,4 +8,6 @@ CREATE TABLE ticket (
   subject    VARCHAR NOT NULL,
   body       VARCHAR NOT NULL,
   status_id  INTEGER NOT NULL
+  create_at  DATETIME NOT NULL
+  update_at  DATETIME NOT NULL
 )
