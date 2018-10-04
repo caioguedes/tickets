@@ -67,9 +67,9 @@
 
     (GET "/comments/:id" [id :as request]
          :summary "Get a comment"
-         (if (= id "10")
-           (not-found {:message "Not Found"})
-           (ok {:results (ticket-comment/get-comment db-spec id)})))))
+         (if-let [comment (ticket-comment/get-comment db-spec id)]
+           (ok {:results comment})
+           (not-found {:message "Not Found"})))))
 
 (def app
   (api
