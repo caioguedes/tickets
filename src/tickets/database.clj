@@ -11,7 +11,9 @@
                       [[:id        "SERIAL PRIMARY KEY"]
                        [:subject   "VARCHAR NOT NULL"]
                        [:body      "TEXT NOT NULL"]
-                       [:status_id "INTEGER NOT NULL"]]))
+                       [:status_id "INTEGER NOT NULL"]
+                       [:updated_at "TIMESTAMP"]
+                       [:created_at "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"]]))
 
 (def default-ticket-status [{:name "New"}
                             {:name "Open"}
