@@ -2,13 +2,17 @@
   (:require [clojure.java.jdbc :as j]
             [tickets.db.status :as status]))
 
+(defn include-defaults [ticket]
+  (-> ticket
+      (assoc :status_id 1)))
+
 (defn include-ticket-status [db-spec ticket]
   (-> ticket
       (assoc :status (status/get-status db-spec (:status_id ticket)))
       (dissoc :status_id)))
 
 (defn create-ticket [db-spec ticket]
-  (j/insert! db-spec :ticket ticket))
+  (first (j/insert! db-spec :ticket ticket)))
 
 (defn update-ticket [db-spec ticket]
   (j/update! db-spec :ticket (dissoc ticket :id) ["id = ?" (:id ticket)]))

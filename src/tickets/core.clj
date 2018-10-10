@@ -33,9 +33,13 @@
            (ok {:results ticket})
            (not-found {:message "Not Found"})))
 
-    (POST "/" []
+    (POST "/" [& parameters]
           :summary "Create a new ticket"
-          (created "/api/v1/tickets/1" {:results mock-ticket}))
+          (let [data (-> (select-keys parameters [:subject :body])
+                         ticket/include-defaults)
+                ticket-id (:id (ticket/create-ticket db-spec data))
+                ticket (ticket/get-ticket db-spec ticket-id)]
+            (created (str "/api/v1/tickets/" ticket-id) {:results ticket})))
 
     (PUT "/:id" [id :as request]
          :summary "Update a ticket"
@@ -44,13 +48,6 @@
            (let [changes (select-keys (:params request) [:subject :body :status_id])
                  updated (ticket/update-ticket db-spec (assoc changes :id id))]
              (ok {:results (ticket/get-ticket db-spec id)}))))))
-
-(def mock-comments [{:id 1
-                     :ticket_id 1
-                     :body "Could you discribe the error?"}
-                    {:id 2
-                     :ticket_id 1
-                     :body "Yeah! When I push the button, nothing happens..."}])
 
 (def tickets-comments-routes
   (context "/tickets/:ticket-id" [ticket-id]
