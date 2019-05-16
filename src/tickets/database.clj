@@ -14,7 +14,7 @@
                        [:body      "TEXT NOT NULL"]
                        [:status_id "INTEGER NOT NULL"]
                        [:updated_at "TIMESTAMP"]
-                       [:created_at "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"]]))
+                       [:created_at "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"]]
                        [:status_id :integer "NOT NULL" "REFERENCES ticket_status(id)"]]))
 
 (def ticket-comment-table-ddl
