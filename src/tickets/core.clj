@@ -2,7 +2,8 @@
   (:require [compojure.api.sweet :refer :all]
             [compojure.route :as route]
             [ring.util.http-response :refer :all]
-            [tickets.db.ticket :as ticket]))
+            [tickets.db.ticket :as ticket]
+            [tickets.db.comment :as ticket-comment]))
 
 (def mock-ticket {:id 1
                   :subject "New Ticket"
@@ -32,9 +33,13 @@
            (ok {:results ticket})
            (not-found {:message "Not Found"})))
 
-    (POST "/" []
+    (POST "/" [& parameters]
           :summary "Create a new ticket"
-          (created "/api/v1/tickets/1" {:results mock-ticket}))
+          (let [data (-> (select-keys parameters [:subject :body])
+                         ticket/include-defaults)
+                ticket-id (:id (ticket/create-ticket db-spec data))
+                ticket (ticket/get-ticket db-spec ticket-id)]
+            (created (str "/api/v1/tickets/" ticket-id) {:results ticket})))
 
     (PUT "/:id" [id :as request]
          :summary "Update a ticket"
@@ -43,6 +48,25 @@
            (let [changes (select-keys (:params request) [:subject :body :status_id])
                  updated (ticket/update-ticket db-spec (assoc changes :id id))]
              (ok {:results (ticket/get-ticket db-spec id)}))))))
+
+(def tickets-comments-routes
+  (context "/tickets/:ticket-id" [ticket-id]
+
+    (GET "/comments" [request]
+         :summary "List comments on a ticket"
+         (let [page (get-in request [:params :page] 1)
+               per_page (get-in request [:params :per_page] 10)]
+           (ok (ticket-comment/get-comments-on-ticket-paginate
+                db-spec
+                ticket-id
+                page
+                per_page))))
+
+    (GET "/comments/:id" [id :as request]
+         :summary "Get a comment"
+         (if-let [comment (ticket-comment/get-comment db-spec id)]
+           (ok {:results comment})
+           (not-found {:message "Not Found"})))))
 
 (def app
   (api
@@ -58,6 +82,9 @@
      :tags ["api"]
      (GET "/" [] (ok {:message "Hello World"}))
      ;; Tickets
-     tickets-routes)
+     tickets-routes
+     ;; Tickets Comments
+     tickets-comments-routes)
+
    (undocumented
     (route/not-found (not-found {:message "Not Found"})))))
