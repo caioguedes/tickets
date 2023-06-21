@@ -7,7 +7,7 @@ services:
     working_dir: /usr/src/app
     ports:
       - "3000:3000"
-    command: "lein ring server"
+    command: "lein ring server-headless"
     depends_on:
       - postgres
   postgres:
